@@ -88,28 +88,10 @@ route.post("/portal/:id", (req, res, next) => {
 
 //API for attempting to log in a new user
 route.post("/login", (req, res, next) => {
-    let { username, password } = req.body
+    let { username, password,usernameOrEmail } = req.body
     console.log(username)
     console.log(password)
 
-    /*Student.findOne({
-       $and: [
-           { username: username },
-           { password: password }
-       ]
-   }, (err, student) => {
-       if (err) {
-           console.log(err)
-           return res.json({ loggedIn: false, err })
-       }
-       if (!student) {
-           return res.json({ loggedIn: false })
-       }
-       if (student) {
-           console.log(student)
-           return res.json({ loggedIn: true, student })
-       }
-   })*/
     console.log(`req.user: ${req.user}`)
     if (req.user) {
         return res.json({
@@ -158,6 +140,44 @@ route.post("/login", (req, res, next) => {
                 })
             });
         }
+        if (!username&& usernameOrEmail && password) {
+            console.table(req.body)
+            Student.findOne({
+                $and: [
+                    { password: password },
+                    {
+                        $or: [
+                            { username: usernameOrEmail },
+                            { email: usernameOrEmail }
+                        ]
+                    }],
+            }, (err, student) => {
+                if (err) {
+                    console.log(err)
+                    return res.json({ loggedIn: false, err })
+                }
+                if (!student) {
+                    return res.json({ loggedIn: false,info:"Failed to log in" })
+                }
+                if (student) {
+                    console.log(student)
+                    return res.json({ loggedIn: true, user:{
+                        fname: student.fname,
+                        lname: student.lname,
+                        mname: student.mname,
+                        username: student.username,
+                        email: student.email,
+                        faculty: student.faculty,
+                        department: student.department,
+                        gender: student.gender,
+                        prof_pic:student.prof_pic,
+                        prof_vid: student.prof_vid,
+                        email: student.email,
+                        password: student.password,
+                        id: student._id} })
+                }
+            })
+        }
         else {
             return res.json({ info: "Login parameters not complete" })
         }
@@ -190,11 +210,11 @@ route.post("/change_pass", (req, res, next) => {
                     return res.json({ err, info: "Password change failed" })
                 }
                 if (!student) {
-                    return res.json({ info: "Password change failed" })
+                    return res.json({ passChanged: false, info: "Password change failed" })
                 }
                 if (student) {
                     res.status = 200;
-                    return res.json({ info: "Password change successful" })
+                    return res.json({ passChanged: true, info: "Password change successful" })
                 }
             })
     }
