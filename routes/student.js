@@ -187,7 +187,7 @@ route.post("/login", (req, res, next) => {
     }
 });
 
-//API for logging
+//API for logging out
 route.get('/logout', function (req, res) {
     req.logout();
     res.json({ isLoggedIn: false })
