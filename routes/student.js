@@ -56,7 +56,7 @@ route.post("/register", cpUpload, (req, res, next) => {
     })
 })
 
-//post API for a logged-in user: fetches user data
+//post API for a logged-in user: fetches user data via params
 route.post("/portal/:id", (req, res, next) => {
     let id = req.params.id
     console.log(id)
@@ -203,7 +203,8 @@ route.post("/delete_account", (req, res, next) => {
         return res.json({ info: "Account deleted" })
     })
 });
-//to change 
+
+//to change password
 route.post("/change_pass", (req, res, next) => {
     let {username,newpass,id} = req.body;
         Student.updateOne({$and:[
