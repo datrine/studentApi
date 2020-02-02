@@ -140,7 +140,7 @@ route.post("/login", (req, res, next) => {
                 })
             });
         }
-        if (!username&& usernameOrEmail && password) {
+        else if (!username&& usernameOrEmail && password) {
             console.table(req.body)
             Student.findOne({
                 $and: [
@@ -188,7 +188,7 @@ route.get('/logout', function (req, res) {
     req.logout();
     res.json({ isLoggedIn: false })
 });
-
+//to delete account
 route.post("/delete_account", (req, res, next) => {
     let student = req.user;
     Student.remove({ id: { $eq: student.id } }, (err) => {
@@ -198,13 +198,14 @@ route.post("/delete_account", (req, res, next) => {
         return res.json({ info: "Account deleted" })
     })
 });
-
+//to change 
 route.post("/change_pass", (req, res, next) => {
-    let data = req.body;
-    let student = req.user;
-    if (student) {
-        Student.updateOne({ id: { $eq: student.id } },
-            { $set: { "password": password } },
+    let {username,newpass,id} = req.body;
+        Student.updateOne({$and:[
+            { id: { $eq: id } },
+            { username: { $eq: username } }
+        ]},
+            { $set: { "password": newpass } },
             (err, student) => {
                 if (err) {
                     return res.json({ err, info: "Password change failed" })
@@ -217,6 +218,5 @@ route.post("/change_pass", (req, res, next) => {
                     return res.json({ passChanged: true, info: "Password change successful" })
                 }
             })
-    }
 });
 module.exports = route;
