@@ -1,6 +1,7 @@
 var express = require("express");
 var route = express.Router();
 var multer = require("multer");
+
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "uploads")
@@ -9,7 +10,9 @@ var storage = multer.diskStorage({
         cb(null, Date.now() + file.originalname)
     }
 })
+
 var upload = multer({ storage: storage })
+
 var Student = require("../model/studentModel")
 
 route.get("/register/", (req, res, next) => {
@@ -184,10 +187,12 @@ route.post("/login", (req, res, next) => {
     }
 });
 
+//API for logging
 route.get('/logout', function (req, res) {
     req.logout();
     res.json({ isLoggedIn: false })
 });
+
 //to delete account
 route.post("/delete_account", (req, res, next) => {
     let student = req.user;
